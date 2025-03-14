@@ -95,22 +95,106 @@
     </div>
     
     <div class="row mt-4">
-        <div class="col-12">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4 class="card-title mb-0">Recent Activity</h4>
+                <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">Wallet Balance</h4>
+                    <a href="{{ url_for('add_balance') }}" class="btn btn-light">Add Balance</a>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle me-2"></i> Historical OTP activity will be displayed here in a future update.
+                    <div class="text-center py-3">
+                        <h3><i class="fas fa-wallet me-2"></i> ₹{{ current_user.wallet_balance|default(0)|round(2) }}</h3>
+                        <p class="text-muted">Current Balance</p>
                     </div>
-                    <div class="text-center py-4">
-                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
-                        <p class="text-muted">No recent activity to display</p>
+                    
+                    <div class="mt-4">
+                        <h5 class="border-bottom pb-2">Pending Requests</h5>
+                        {% if pending_transactions %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Amount</th>
+                                            <th>UTR Number</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for transaction in pending_transactions %}
+                                        <tr>
+                                            <td>₹{{ transaction.amount }}</td>
+                                            <td>{{ transaction.utr_number }}</td>
+                                            <td>{{ transaction.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td><span class="badge bg-warning">{{ transaction.status }}</span></td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-3">
+                                <p class="text-muted">No pending requests</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <h5 class="border-bottom pb-2">Recent Transactions</h5>
+                        {% if completed_transactions %}
+                            <div class="table-responsive">
+                                <table class="table table-striped">
+                                    <thead>
+                                        <tr>
+                                            <th>Amount</th>
+                                            <th>UTR Number</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for transaction in completed_transactions %}
+                                        <tr>
+                                            <td>₹{{ transaction.amount }}</td>
+                                            <td>{{ transaction.utr_number }}</td>
+                                            <td>{{ transaction.processed_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                                            <td>
+                                                {% if transaction.status == 'approved' %}
+                                                <span class="badge bg-success">Approved</span>
+                                                {% else %}
+                                                <span class="badge bg-danger">Rejected</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="text-center py-3">
+                                <p class="text-muted">No completed transactions</p>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    {% if current_user.is_admin %}
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card bg-dark text-white">
+                <div class="card-body">
+                    <h4><i class="fas fa-user-shield me-2"></i> Admin Panel</h4>
+                    <p>You have admin privileges on this system.</p>
+                    <a href="{{ url_for('admin_pending_transactions') }}" class="btn btn-primary">
+                        <i class="fas fa-money-check-alt me-2"></i> View Pending Transaction Requests
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
