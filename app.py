@@ -53,7 +53,7 @@ with app.app_context():
     # Create admin user if no users exist
     if models.User.query.count() == 0:
         admin_user = models.User(
-            username='admin',
+            username='noobruboss',
             email='amitaaa12562@gmail.com',
             password_hash=generate_password_hash('boss'),
             is_verified=True,
@@ -63,7 +63,7 @@ with app.app_context():
         )
         db.session.add(admin_user)
         db.session.commit()
-        print("Admin user created successfully. Username: admin, Password: boss")
+        print("Admin user created successfully. Username: noobruboss, Password: boss")
     
     from routes import *  # Import routes after the app is created
 
