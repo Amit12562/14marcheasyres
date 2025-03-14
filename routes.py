@@ -30,49 +30,14 @@ def login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        delivery_method = request.form.get('delivery_method', 'email')
         
         user = User.query.filter_by(username=username).first()
         
         if user and check_password_hash(user.password_hash, password):
-            # Generate OTP for login verification
-            otp_code = generate_otp(app.config['OTP_LENGTH'])
-            expiry_time = datetime.utcnow() + timedelta(seconds=app.config['OTP_EXPIRY_SECONDS'])
-            
-            # Create OTP record
-            otp = OTP(
-                user_id=user.id,
-                otp_code=otp_code,
-                purpose='login',
-                delivery_method=delivery_method,
-                expires_at=expiry_time
-            )
-            db.session.add(otp)
-            db.session.commit()
-            
-            # Store user_id in session for OTP verification
-            session['user_id'] = user.id
-            session['otp_id'] = otp.id
-            
-            # Send OTP based on delivery method
-            if delivery_method == 'email':
-                if send_email_otp(user.email, otp_code, 'Login'):
-                    flash('OTP has been sent to your email address.', 'success')
-                else:
-                    flash('Failed to send OTP to your email. Please try again.', 'danger')
-                    return redirect(url_for('login'))
-            elif delivery_method == 'sms':
-                if not user.phone_number:
-                    flash('Phone number not available. Please use email OTP instead.', 'warning')
-                    return redirect(url_for('login'))
-                
-                if send_sms_otp(user.phone_number, otp_code, 'Login'):
-                    flash('OTP has been sent to your phone number.', 'success')
-                else:
-                    flash('Failed to send OTP to your phone. Please try again.', 'danger')
-                    return redirect(url_for('login'))
-            
-            return redirect(url_for('verify_otp', purpose='login'))
+            # Log in the user directly without OTP
+            login_user(user)
+            flash('Login successful!', 'success')
+            return redirect(url_for('dashboard'))
         else:
             flash('Invalid username or password.', 'danger')
     
@@ -88,7 +53,6 @@ def register():
         email = request.form.get('email')
         password = request.form.get('password')
         phone_number = request.form.get('phone_number')
-        delivery_method = request.form.get('delivery_method', 'email')
         
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
@@ -100,55 +64,21 @@ def register():
             flash('Email already registered. Please use a different one.', 'danger')
             return redirect(url_for('register'))
         
-        # Create user
+        # Create user (verified by default, no OTP)
         user = User(
             username=username,
             email=email,
             phone_number=phone_number,
             password_hash=generate_password_hash(password),
-            is_verified=False
+            is_verified=True,  # Set as verified by default 
+            is_admin=False,
+            wallet_balance=0.0
         )
         db.session.add(user)
         db.session.commit()
         
-        # Generate OTP for registration verification
-        otp_code = generate_otp(app.config['OTP_LENGTH'])
-        expiry_time = datetime.utcnow() + timedelta(seconds=app.config['OTP_EXPIRY_SECONDS'])
-        
-        # Create OTP record
-        otp = OTP(
-            user_id=user.id,
-            otp_code=otp_code,
-            purpose='registration',
-            delivery_method=delivery_method,
-            expires_at=expiry_time
-        )
-        db.session.add(otp)
-        db.session.commit()
-        
-        # Store user_id in session for OTP verification
-        session['user_id'] = user.id
-        session['otp_id'] = otp.id
-        
-        # Send OTP based on delivery method
-        if delivery_method == 'email':
-            if send_email_otp(user.email, otp_code, 'Registration'):
-                flash('OTP has been sent to your email address.', 'success')
-            else:
-                flash('Failed to send OTP to your email. Please try again.', 'danger')
-                return redirect(url_for('register'))
-        elif delivery_method == 'sms':
-            if not user.phone_number:
-                flash('Phone number not provided. Please use email OTP instead.', 'warning')
-                return redirect(url_for('register'))
-            
-            if send_sms_otp(user.phone_number, otp_code, 'Registration'):
-                flash('OTP has been sent to your phone number.', 'success')
-            else:
-                flash('Failed to send OTP to your phone. Please try again.', 'danger')
-                return redirect(url_for('register'))
-        
-        return redirect(url_for('verify_otp', purpose='registration'))
+        flash('Registration successful! You can now log in.', 'success')
+        return redirect(url_for('login'))
     
     return render_template('register.html')
 
