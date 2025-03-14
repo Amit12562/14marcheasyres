@@ -54,8 +54,8 @@ with app.app_context():
     if models.User.query.count() == 0:
         admin_user = models.User(
             username='admin',
-            email='admin@example.com',
-            password_hash=generate_password_hash('admin123'),
+            email='amitaaa12562@gmail.com',
+            password_hash=generate_password_hash('boss'),
             is_verified=True,
             is_admin=True,
             wallet_balance=0.0,
@@ -63,7 +63,7 @@ with app.app_context():
         )
         db.session.add(admin_user)
         db.session.commit()
-        print("Admin user created successfully. Username: admin, Password: admin123")
+        print("Admin user created successfully. Username: admin, Password: boss")
     
     from routes import *  # Import routes after the app is created
 
