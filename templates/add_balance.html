@@ -47,30 +47,60 @@
                 </div>
                 <div class="card-body">
                     <div class="mb-4">
-                        <h6 class="fw-bold"><i class="fas fa-university me-2"></i> Bank Transfer Details</h6>
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <tbody>
-                                    <tr>
-                                        <th width="30%">Account Name</th>
-                                        <td>Secure OTP Service</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Account Number</th>
-                                        <td>1234567890</td>
-                                    </tr>
-                                    <tr>
-                                        <th>IFSC Code</th>
-                                        <td>SBIN0012345</td>
-                                    </tr>
-                                    <tr>
-                                        <th>Bank Name</th>
-                                        <td>State Bank of India</td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <h6 class="fw-bold"><i class="fas fa-mobile-alt me-2"></i> UPI Payment Details</h6>
+                        <div class="row">
+                            <div class="col-md-6 text-center mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="mb-3">Scan QR Code</h6>
+                                        <img src="{{ url_for('static', filename='images/qr_code.jpg') }}" alt="UPI QR Code" class="img-fluid mb-2" style="max-width: 200px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-center">
+                                <div class="w-100">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text"><i class="fas fa-qrcode"></i></span>
+                                        <input type="text" class="form-control" value="UPI=Amitachara@fam" id="upiId" readonly>
+                                        <button class="btn btn-outline-secondary" type="button" onclick="copyUpiId()">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                    <div class="alert alert-success">
+                                        <small><i class="fas fa-info-circle"></i> Copy the UPI ID or scan the QR code to make payment</small>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    
+                    <script>
+                    function copyUpiId() {
+                        var copyText = document.getElementById("upiId");
+                        copyText.select();
+                        copyText.setSelectionRange(0, 99999);
+                        navigator.clipboard.writeText(copyText.value);
+                        
+                        // Create a temporary element for showing "Copied!" message
+                        var tooltip = document.createElement("div");
+                        tooltip.textContent = "Copied!";
+                        tooltip.style.position = "fixed";
+                        tooltip.style.backgroundColor = "#4CAF50";
+                        tooltip.style.color = "white";
+                        tooltip.style.padding = "5px 10px";
+                        tooltip.style.borderRadius = "5px";
+                        tooltip.style.zIndex = "9999";
+                        tooltip.style.top = "50%";
+                        tooltip.style.left = "50%";
+                        tooltip.style.transform = "translate(-50%, -50%)";
+                        document.body.appendChild(tooltip);
+                        
+                        // Remove the element after 2 seconds
+                        setTimeout(function() {
+                            document.body.removeChild(tooltip);
+                        }, 2000);
+                    }
+                    </script>
                     
                     <div class="alert alert-warning">
                         <h6 class="fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Important Notes:</h6>
