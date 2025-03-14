@@ -1,10 +1,11 @@
 import requests
 import logging
 import json
+import os
 from datetime import datetime
 
-# SheetDB API URL
-SHEETDB_API_URL = "https://sheetdb.io/api/v1/vu2ewxcds5ot1"
+# SheetDB API URL from environment variable with fallback
+SHEETDB_API_URL = os.environ.get("SHEETDB_API_URL", "https://sheetdb.io/api/v1/vu2ewxcds5ot1")
 
 logger = logging.getLogger(__name__)
 
