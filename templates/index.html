@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Secure OTP Service - Home{% endblock %}
+
+{% block content %}
+<div class="row align-items-center py-5">
+    <div class="col-lg-6">
+        <h1 class="display-5 fw-bold">Secure Authentication with OTP</h1>
+        <p class="lead">A modern, secure one-time password service with multiple delivery methods for authentication and verification.</p>
+        
+        <div class="d-grid gap-2 d-md-flex justify-content-md-start mt-4">
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg px-4 me-md-2">Go to Dashboard</a>
+            {% else %}
+                <a href="{{ url_for('login') }}" class="btn btn-primary btn-lg px-4 me-md-2">Login</a>
+                <a href="{{ url_for('register') }}" class="btn btn-outline-secondary btn-lg px-4">Register</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="col-lg-6 d-flex justify-content-center mt-5 mt-lg-0">
+        <div class="text-center">
+            <svg width="400" height="300" viewBox="0 0 600 400" xmlns="http://www.w3.org/2000/svg">
+                <!-- Shield Background -->
+                <path d="M300,50 L500,125 L500,275 C500,325 400,375 300,390 C200,375 100,325 100,275 L100,125 Z" fill="#2a2a2a" stroke="#6c757d" stroke-width="8"/>
+                
+                <!-- Lock Body -->
+                <rect x="225" y="170" width="150" height="140" rx="10" ry="10" fill="#495057"/>
+                
+                <!-- Lock Shackle -->
+                <path d="M265,170 L265,120 C265,90 335,90 335,120 L335,170" stroke="#adb5bd" stroke-width="20" fill="none"/>
+                
+                <!-- OTP Display -->
+                <rect x="250" y="200" width="100" height="40" rx="5" ry="5" fill="#212529"/>
+                
+                <!-- OTP Digits -->
+                <text x="260" y="230" font-family="monospace" font-size="24" fill="#17a2b8">8 3 7 2</text>
+                
+                <!-- Mobile and Email icons -->
+                <path d="M200,300 L230,280 L230,320 L200,300 Z" fill="#6c757d"/>
+                <rect x="350" y="290" width="40" height="25" rx="2" ry="2" fill="#6c757d"/>
+                <path d="M350,290 L370,305 L390,290" stroke="#212529" stroke-width="2" fill="none"/>
+            </svg>
+        </div>
+    </div>
+</div>
+
+<hr class="my-5">
+
+<div class="row g-4 py-4">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-lock fa-3x mb-3 text-primary"></i>
+                <h3 class="card-title">Secure OTP Generation</h3>
+                <p class="card-text">Our system uses cryptographic algorithms to generate secure one-time passwords that are nearly impossible to predict.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-paper-plane fa-3x mb-3 text-primary"></i>
+                <h3 class="card-title">Multiple Delivery Methods</h3>
+                <p class="card-text">Choose between email and SMS delivery for your OTP codes, based on your preferences and security requirements.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-cogs fa-3x mb-3 text-primary"></i>
+                <h3 class="card-title">Configurable Security</h3>
+                <p class="card-text">Customize OTP length, validity periods, and verification workflows to meet your specific security needs.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

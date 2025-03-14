@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block title %}Verify OTP - Secure OTP Service{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header text-center bg-primary text-white">
+                <h3 class="mb-0">Verify OTP</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <div class="mb-3">
+                        {% if purpose == 'registration' %}
+                            <i class="fas fa-user-plus fa-3x text-primary"></i>
+                            <h4 class="mt-2">Complete Registration</h4>
+                        {% elif purpose == 'login' %}
+                            <i class="fas fa-sign-in-alt fa-3x text-primary"></i>
+                            <h4 class="mt-2">Login Verification</h4>
+                        {% elif purpose == 'reset_password' %}
+                            <i class="fas fa-key fa-3x text-primary"></i>
+                            <h4 class="mt-2">Reset Password</h4>
+                        {% endif %}
+                    </div>
+                    
+                    <p>
+                        We've sent a verification code to your 
+                        {% if delivery_method == 'email' %}
+                            email address.
+                        {% elif delivery_method == 'sms' %}
+                            phone number.
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <form method="POST" action="{{ url_for('verify_otp', purpose=purpose) }}">
+                    <div class="mb-4">
+                        <label for="otp_code" class="form-label">Enter OTP Code</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                            <input type="text" class="form-control text-center" id="otp_code" name="otp_code" 
+                                   placeholder="Enter code" maxlength="8" required autocomplete="off">
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mb-3">
+                        <button type="submit" class="btn btn-primary">Verify OTP</button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <p>Didn't receive the code? <a href="#" id="resend-otp">Resend OTP</a></p>
+                    <div id="countdown" class="mt-2 text-muted d-none">
+                        Resend available in <span id="timer">60</span> seconds
+                    </div>
+                    <div id="resend-message" class="mt-2 alert alert-success d-none">
+                        OTP has been resent successfully!
+                    </div>
+                    <div id="resend-error" class="mt-2 alert alert-danger d-none">
+                        Failed to resend OTP. Please try again.
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer text-center">
+                <a href="{{ url_for('login') }}">Back to Login</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const resendLink = document.getElementById('resend-otp');
+    const countdownEl = document.getElementById('countdown');
+    const timerEl = document.getElementById('timer');
+    const resendMessage = document.getElementById('resend-message');
+    const resendError = document.getElementById('resend-error');
+    
+    let cooldown = false;
+    let timer = 60;
+    
+    function startCountdown() {
+        cooldown = true;
+        resendLink.classList.add('text-muted');
+        resendLink.style.pointerEvents = 'none';
+        countdownEl.classList.remove('d-none');
+        
+        const interval = setInterval(function() {
+            timer--;
+            timerEl.textContent = timer;
+            
+            if (timer <= 0) {
+                clearInterval(interval);
+                cooldown = false;
+                timer = 60;
+                resendLink.classList.remove('text-muted');
+                resendLink.style.pointerEvents = 'auto';
+                countdownEl.classList.add('d-none');
+            }
+        }, 1000);
+    }
+    
+    resendLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        
+        if (cooldown) return;
+        
+        fetch('/resend_otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                resendMessage.textContent = data.message;
+                resendMessage.classList.remove('d-none');
+                resendError.classList.add('d-none');
+                setTimeout(() => {
+                    resendMessage.classList.add('d-none');
+                }, 5000);
+                startCountdown();
+            } else {
+                resendError.textContent = data.message;
+                resendError.classList.remove('d-none');
+                resendMessage.classList.add('d-none');
+                setTimeout(() => {
+                    resendError.classList.add('d-none');
+                }, 5000);
+            }
+        })
+        .catch(error => {
+            resendError.textContent = 'An error occurred. Please try again.';
+            resendError.classList.remove('d-none');
+            resendMessage.classList.add('d-none');
+            setTimeout(() => {
+                resendError.classList.add('d-none');
+            }, 5000);
+            console.error('Error:', error);
+        });
+    });
+    
+    // Format OTP input for better readability
+    const otpInput = document.getElementById('otp_code');
+    otpInput.addEventListener('input', function(e) {
+        // Convert to uppercase and remove non-alphanumeric characters
+        this.value = this.value.toUpperCase().replace(/[^0-9A-Z]/g, '');
+    });
+});
+</script>
+{% endblock %}

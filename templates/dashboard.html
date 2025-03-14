@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Secure OTP Service{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-primary">
+                <div class="card-body">
+                    <h2 class="card-title">Welcome, {{ current_user.username }}!</h2>
+                    <p class="card-text">You are successfully authenticated with our Secure OTP Service.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Account Information</h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-user me-2"></i> Username</span>
+                            <span class="badge bg-secondary">{{ current_user.username }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-envelope me-2"></i> Email</span>
+                            <span class="badge bg-secondary">{{ current_user.email }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-mobile-alt me-2"></i> Phone Number</span>
+                            <span class="badge bg-secondary">
+                                {% if current_user.phone_number %}
+                                    {{ current_user.phone_number }}
+                                {% else %}
+                                    Not provided
+                                {% endif %}
+                            </span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <span><i class="fas fa-calendar-alt me-2"></i> Account Created</span>
+                            <span class="badge bg-secondary">{{ current_user.created_at.strftime('%Y-%m-%d') }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card h-100">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">OTP Security Settings</h4>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <h5><i class="fas fa-shield-alt me-2"></i> Preferred OTP Delivery</h5>
+                        <div class="form-check form-switch mt-2">
+                            <input class="form-check-input" type="checkbox" id="email_delivery_pref" checked>
+                            <label class="form-check-label" for="email_delivery_pref">Email Delivery</label>
+                        </div>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="sms_delivery_pref" 
+                                   {% if not current_user.phone_number %}disabled{% endif %}>
+                            <label class="form-check-label" for="sms_delivery_pref">
+                                SMS Delivery 
+                                {% if not current_user.phone_number %}
+                                <small class="text-muted">(Add phone number first)</small>
+                                {% endif %}
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h5><i class="fas fa-history me-2"></i> OTP Validity Period</h5>
+                        <select class="form-select" id="otp_validity" disabled>
+                            <option value="300" selected>5 minutes (default)</option>
+                            <option value="600">10 minutes</option>
+                            <option value="1800">30 minutes</option>
+                        </select>
+                        <div class="form-text">This setting can only be changed by administrators</div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 mt-4">
+                        <button class="btn btn-outline-primary" disabled>
+                            <i class="fas fa-cog me-2"></i> Update Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Recent Activity</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Historical OTP activity will be displayed here in a future update.
+                    </div>
+                    <div class="text-center py-4">
+                        <i class="fas fa-history fa-3x text-muted mb-3"></i>
+                        <p class="text-muted">No recent activity to display</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
