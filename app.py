@@ -46,7 +46,24 @@ login_manager.login_message_category = 'info'
 with app.app_context():
     # Make sure to import the models here so their tables will be created
     import models  # noqa: F401
+    from werkzeug.security import generate_password_hash
+    
     db.create_all()
+    
+    # Create admin user if no users exist
+    if models.User.query.count() == 0:
+        admin_user = models.User(
+            username='admin',
+            email='admin@example.com',
+            password_hash=generate_password_hash('admin123'),
+            is_verified=True,
+            is_admin=True,
+            wallet_balance=0.0,
+            phone_number=None
+        )
+        db.session.add(admin_user)
+        db.session.commit()
+        print("Admin user created successfully. Username: admin, Password: admin123")
     
     from routes import *  # Import routes after the app is created
 
