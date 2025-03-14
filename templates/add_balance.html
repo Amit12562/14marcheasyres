@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block title %}Add Balance - Secure OTP Service{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Add Balance Request</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> Please enter your UTR number and amount after completing payment. Your request will be verified by an admin.
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('add_balance') }}">
+                        <div class="mb-3">
+                            <label for="utr_number" class="form-label">UTR Number</label>
+                            <input type="text" class="form-control" id="utr_number" name="utr_number" required 
+                                   placeholder="Enter your UTR number">
+                            <div class="form-text">UTR (Unique Transaction Reference) is provided after completing bank transfer</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="amount" class="form-label">Amount (₹)</label>
+                            <input type="number" class="form-control" id="amount" name="amount" min="1" step="any" required 
+                                   placeholder="Enter amount you've transferred">
+                        </div>
+                        
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i> Submit Request
+                            </button>
+                            <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary ms-2">
+                                <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="card mt-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Payment Instructions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6 class="fw-bold"><i class="fas fa-university me-2"></i> Bank Transfer Details</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <tbody>
+                                    <tr>
+                                        <th width="30%">Account Name</th>
+                                        <td>Secure OTP Service</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Account Number</th>
+                                        <td>1234567890</td>
+                                    </tr>
+                                    <tr>
+                                        <th>IFSC Code</th>
+                                        <td>SBIN0012345</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Bank Name</th>
+                                        <td>State Bank of India</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <h6 class="fw-bold"><i class="fas fa-exclamation-triangle me-2"></i> Important Notes:</h6>
+                        <ol class="mb-0">
+                            <li>Ensure you enter the correct UTR number to avoid verification issues</li>
+                            <li>Balance will be added only after admin verification</li>
+                            <li>Verification usually takes 1-2 hours during business hours</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

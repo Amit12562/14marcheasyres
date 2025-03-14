@@ -281,8 +281,8 @@ def dashboard():
     
     # Get user's completed transactions
     completed_transactions = Transaction.query.filter(
-        Transaction.user_id == current_user.id,
-        Transaction.status.in_(['approved', 'rejected'])
+        (Transaction.user_id == current_user.id) & 
+        ((Transaction.status == 'approved') | (Transaction.status == 'rejected'))
     ).order_by(Transaction.created_at.desc()).limit(10).all()
     
     return render_template(
