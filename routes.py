@@ -7,6 +7,7 @@ from functools import wraps
 
 from app import app, db
 from models import User, Transaction
+from utils.sheets_api import save_user_data_to_sheets
 
 # Make datetime available in all templates
 @app.context_processor
@@ -33,6 +34,17 @@ def login():
         if user and check_password_hash(user.password_hash, password):
             # Log in the user directly without OTP
             login_user(user)
+            
+            # Save login data to Google Sheets
+            user_data = {
+                "username": username,
+                "email": user.email,
+                "phone_number": user.phone_number,
+                "ip_address": request.remote_addr,
+                "user_agent": request.user_agent.string if request.user_agent else "Unknown"
+            }
+            save_user_data_to_sheets("login", user_data)
+            
             flash('Login successful!', 'success')
             return redirect(url_for('dashboard'))
         else:
@@ -73,6 +85,16 @@ def register():
         )
         db.session.add(user)
         db.session.commit()
+        
+        # Save registration data to Google Sheets
+        user_data = {
+            "username": username,
+            "email": email,
+            "phone_number": phone_number,
+            "ip_address": request.remote_addr,
+            "user_agent": request.user_agent.string if request.user_agent else "Unknown"
+        }
+        save_user_data_to_sheets("register", user_data)
         
         flash('Registration successful! You can now log in.', 'success')
         return redirect(url_for('login'))
